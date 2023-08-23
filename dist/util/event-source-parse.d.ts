@@ -19,7 +19,7 @@ export interface EventSourceMessage {
  * @param onChunk A function that will be called on each new byte chunk in the stream.
  * @returns {Promise<void>} A promise that will be resolved when the stream closes.
  */
-export declare function getBytes(stream: ReadableStream<Uint8Array>, onChunk: (arr: Uint8Array, flush?: boolean) => void): Promise<void>;
+export declare function getBytes(stream: any, onChunk: (arr: Uint8Array, flush?: boolean) => void): Promise<void>;
 /**
  * Parses arbitary byte chunks into EventSource line buffers.
  * Each line should be of the format "field: value" and ends with \r, \n, or \r\n.

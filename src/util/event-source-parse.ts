@@ -29,25 +29,19 @@ export interface EventSourceMessage {
  * @returns {Promise<void>} A promise that will be resolved when the stream closes.
  */
 export async function getBytes(
-  stream: ReadableStream<Uint8Array>,
+  stream: any,
   onChunk: (arr: Uint8Array, flush?: boolean) => void
 ) {
-  const reader = stream.getReader();
-
   // CHANGED: Introduced a "flush" mechanism to process potential pending messages when the stream ends.
   //          This change is essential to ensure that we capture every last piece of information from streams,
   //          such as those from Azure OpenAI, which may not terminate with a blank line. Without this
   //          mechanism, we risk ignoring a possibly significant last message.
   //          See https://github.com/hwchase17/langchainjs/issues/1299 for details.
   // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const result = await reader.read();
-    if (result.done) {
-      onChunk(new Uint8Array(), true);
-      break;
-    }
-    onChunk(result.value);
+  for await (const chunk of stream) {
+    onChunk(chunk);
   }
+  onChunk(new Uint8Array(), true);
 }
 
 const enum ControlChars {

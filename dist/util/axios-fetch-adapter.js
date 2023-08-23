@@ -252,9 +252,12 @@ async function getResponse(request, config) {
     if (config.responseType === "stream") {
         options.headers.set("Accept", EventStreamContentType);
     }
+    if (process.env.HTTPS_PROXY !== undefined) {
+        options.agent = new HttpsProxyAgent(process.env.HTTPS_PROXY);
+    }
     let stageOne;
     try {
-        stageOne = await fetch(request, { agent: new HttpsProxyAgent(process.env.HTTPS_PROXY || process.env.https_proxy || ''), ...options });
+        stageOne = await fetch(request, options);
     }
     catch (e) {
         if (e && e.name === "AbortError") {
